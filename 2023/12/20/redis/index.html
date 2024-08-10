@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+  
+  <meta name="baidu-site-verification" content="code-J1Qg17G6wT" />
+  <title>redis学习 - Hexo</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="李灿的博客">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  
+  
+
+    <!-- Site Verification -->
+    <meta name="baidu-site-verification" content="code-J1Qg17G6wT" />
+
+  <link rel="shortcut icon" href="/images/head/head2.jpg" type="image/png" />
+  <meta name="description" content="一、redis的简介$\qquad$ redis是一个键值型的数据库，key一般是个string，而value则有很多种类型。 1. redis的key结构因为key是不可重复的，但redis又没有table这种结构，那么当多个数据对应的id相同时，该怎么处理？ 因此，redis允许key有多个单词形成层级结构，多个单词之间通过‘:’的形式隔开，即 $$项目名：业务名：类型：id$$ 2.redi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis学习">
+<meta property="og:url" content="http://example.com/2023/12/20/redis/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、redis的简介$\qquad$ redis是一个键值型的数据库，key一般是个string，而value则有很多种类型。 1. redis的key结构因为key是不可重复的，但redis又没有table这种结构，那么当多个数据对应的id相同时，该怎么处理？ 因此，redis允许key有多个单词形成层级结构，多个单词之间通过‘:’的形式隔开，即 $$项目名：业务名：类型：id$$ 2.redi">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-20T08:31:42.000Z">
+<meta property="article:modified_time" content="2024-07-11T03:20:44.633Z">
+<meta property="article:author" content="李灿">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="https://lib.baomitu.com/highlight.js/9.15.8/styles/atom-one-dark.min.css" crossorigin>
+  <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css">
+  <link rel="stylesheet" href="/lib/iconfont/iconfont.css">
+  <link rel="stylesheet" href="/lib/fancybox/css/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="https://lib.baomitu.com/justifiedGallery/3.8.1/css/justifiedGallery.min.css">
+  
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_2421060_8z08qcz5sq3.css">
+  
+  <link rel="stylesheet" href="/css/style.css?v=1723258182909">
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+  
+  <div id="nexmoe-background">
+    <div class="nexmoe-bg" style="background-image: url(/images/background/yuanshen.jpg)"></div>
+    <div class="nexmoe-small" style="background-image: url(/images/background/a85.jpg)"></div>
+    <div class="mdui-appbar mdui-shadow-0">
+      <div class="mdui-toolbar">
+        <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+        <div class="mdui-toolbar-spacer"></div>
+        <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+        <a href="/" title="李灿" class="mdui-btn mdui-btn-icon"><img src="/images/head/head2.jpg" alt="李灿"></a>
+       </div>
+    </div>
+  </div>
+  <div id="nexmoe-header">
+      <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="李灿">
+            <img src="/images/head/head2.jpg" alt="李灿" alt="李灿">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div class="nexmoe-count-item"><span>文章</span>7 <div class="item-radius"></div><div class="item-radius item-right"></div> </div>
+        <div class="nexmoe-count-item"><span>标签</span>7<div class="item-radius"></div><div class="item-radius item-right"></div></div>
+        <div class="nexmoe-count-item"><span>分类</span>1<div class="item-radius"></div><div class="item-radius item-right"></div></div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-meishi"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/archives.html" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-hanbao1"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/about.html" title="关于糖糖">
+            <i class="mdui-list-item-icon nexmoefont icon-jiubei1"></i>
+            <div class="mdui-list-item-content">
+                关于糖糖
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/friend.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-cola"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/download.html" title="下载中心">
+            <i class="mdui-list-item-icon nexmoefont icon-tangguo"></i>
+            <div class="mdui-list-item-content">
+                下载中心
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+  
+  
+<!-- 站内搜索 -->
+
+<div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search" >
+        <form id="search-form">
+            <label><input type="text" id="local-search-input" name="q" results="0" placeholder="站内搜索" class="input form-control" autocomplete="off" autocorrect="off"/></label>
+            <!-- 清空/重置搜索框 -->
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+        </form>
+    </div>
+    <div id="local-search-result"></div> <!-- 搜索结果区 -->
+    <!-- <p class='no-result'></p> 无匹配时显示，注意在 CSS 中设置默认隐藏 -->
+</div>
+
+
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="http://wpa.qq.com/msgrd?v=3&uin=2120252100&site=qq&menu=yes" target="_blank" mdui-tooltip="{content: 'QQ'}" style="color: rgb(64, 196, 255);background-color: rgba(64, 196, 255, .1);">
+            <i class="nexmoefont icon-QQ"></i>
+        </a><a class="mdui-ripple" href="mailto:tangyuxian@vip.qq.com" target="_blank" mdui-tooltip="{content: 'mail'}" style="color: rgb(249,8,8);background-color: rgba(249,8,8,.1);">
+            <i class="nexmoefont icon-mail-fill"></i>
+        </a><a class="mdui-ripple" href="https://blog.csdn.net/qq_40621378?type=blog" target="_blank" mdui-tooltip="{content: 'CSDN'}" style="color: rgb(199,29,35);background-color: rgba(199,29,35,.1);">
+            <i class="nexmoefont icon-csdn"></i>
+        </a><a class="mdui-ripple" href="https://www.cnblogs.com/lovetangyuxian/" target="_blank" mdui-tooltip="{content: '博客园'}" style="color: rgb(66, 214, 29);background-color: rgba(66, 214, 29, .1);">
+            <i class="nexmoefont icon-bokeyuan"></i>
+        </a><a class="mdui-ripple" href="https://github.com/tangyuxian/" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a><a class="mdui-ripple" href="https://gitee.com/tangyuxian" target="_blank" mdui-tooltip="{content: 'gitee'}" style="color: rgb(255, 255, 255);background-color: rgb(199,29,35);">
+            <i class="nexmoefont icon-mayun"></i>
+        </a>
+    </div>
+</div>
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">文章分类</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/study-author-lican/">study author:lican</a>
+          <span class="category-list-count">5</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/Seata/" style="font-size: 10px;">Seata</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/SpringCloud/" style="font-size: 10px;">SpringCloud</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" style="font-size: 10px;">位运算</a>
+    </div>
+    
+  </div>
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">文章归档</h3>
+    <div class="nexmoe-widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/">2023</a><span class="archive-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+<style>
+.nexmoe-widget .archive-list-count{
+	position : absolute;
+	right: 15px;
+	top:9px;
+	color: #DDD;
+}
+</style>
+
+  
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 李灿
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/tangyuxian/hexo-theme-tangyuxian" target="_blank">Tangyuxian</a><br/>
+        <a href="http://beian.miit.gov.cn" target="_blank">辽ICP备2021002341号</a><br/>
+        
+        <div style="font-size: 12px">
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            本站总访问量  <a id="busuanzi_value_site_pv"></a> 次<br />
+            本站访客数<a id="busuanzi_value_site_uv"></a>人次
+        </div>
+        
+        
+    </div>
+
+</div><!-- .nexmoe-drawer -->
+
+  </div>
+  <div id="nexmoe-content">
+    <div class="nexmoe-primary">
+        <div class="nexmoe-post">
+    
+        <div class="nexmoe-post-cover"
+             style="padding-bottom: 41.66666666666667%;">
+            <img data-src="/images/background/yuanshen.jpg" data-sizes="auto" alt="redis学习" class="lazyload">
+            <h1>redis学习</h1>
+        </div>
+    
+
+        <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2023年12月20日</a>
+    <a><i class="nexmoefont icon-areachart"></i>2.2k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 9 分钟</a>
+</div>
+
+        <div class="nexmoe-post-right">
+            
+        </div>
+
+        <article>
+            <h1 id="一、redis的简介"><a href="#一、redis的简介" class="headerlink" title="一、redis的简介"></a>一、redis的简介</h1><p>$\qquad$ redis是一个键值型的数据库，key一般是个string，而value则有很多种类型。</p>
+<h2 id="1-redis的key结构"><a href="#1-redis的key结构" class="headerlink" title="1. redis的key结构"></a>1. redis的key结构</h2><p>因为key是不可重复的，但redis又没有table这种结构，那么当多个数据对应的id相同时，该怎么处理？</p>
+<p>因此，redis允许<code>key</code>有多个单词形成层级结构，多个单词之间通过<code>‘:’</code>的形式隔开，即</p>
+<p>$$项目名：业务名：类型：id$$</p>
+<h2 id="2-redis的value结构"><a href="#2-redis的value结构" class="headerlink" title="2.redis的value结构"></a>2.redis的value结构</h2><p>其中较为常用的为：</p>
+<ul>
+<li>string：字符串类型 -&gt; “hallo world”</li>
+<li>hash：键值对 -&gt; {name: “LiCan”, password : 123456}</li>
+<li>List：列表 -&gt; {A -&gt; B -&gt; C}</li>
+<li>Set：集合 -&gt; {A, B, C}</li>
+<li>SortedSet：有序集合 -&gt; {A: 1, B: 2, C: 3}</li>
+</ul>
+<h1 id="二、redis的基本使用"><a href="#二、redis的基本使用" class="headerlink" title="二、redis的基本使用"></a>二、redis的基本使用</h1><h2 id="1-redis的登录"><a href="#1-redis的登录" class="headerlink" title="1.redis的登录"></a>1.redis的登录</h2><blockquote>
+<p>redis-cli -h 127.0.0.1 -p 6379 -a password</p>
+</blockquote>
+<ul>
+<li>-h：要登录的redis所在的IP，默认为本地</li>
+<li>-p：redis对外的端口，默认为6379</li>
+<li>-a：redis的密码，没有就默认不填</li>
+</ul>
+<h2 id="2-redis的通用命令"><a href="#2-redis的通用命令" class="headerlink" title="2.redis的通用命令"></a>2.redis的通用命令</h2><ol>
+<li><strong>添加一条新数据：</strong> set key value<ul>
+<li>key为键，如果没有会报错</li>
+<li>value为实际值，如果没有会报错</li>
+<li><em>例：set name “LiCan”</em></li>
+</ul>
+</li>
+<li><strong>获取一条已存在的数据：</strong> get key<ul>
+<li>key为已存在的值。如果是不存在的值，则返回结果为空</li>
+<li><em>例：get name -&gt; 结果为 “LiCan”</em></li>
+</ul>
+</li>
+<li><strong>根据正则表达式获取key：</strong> keys pattern<ul>
+<li>pattern为正则表达式</li>
+<li>例：keys * -&gt; 代表查看所有已存在的key</li>
+</ul>
+</li>
+<li><strong>删除已存在的数据：</strong> del key [key ···]<ul>
+<li>key为键，此处可以有多个key</li>
+<li>例：del name -&gt; 结果返回：(integer) 1 ，代表已删除一条数据</li>
+</ul>
+</li>
+<li><strong>批量新增数据：</strong> mset key value key value ···<ul>
+<li>key为键，如果没有会报错</li>
+<li>value为实际值，如果没有会报错</li>
+<li><em>例：mset name “LiCan” password 123456</em></li>
+</ul>
+</li>
+<li><strong>为数据设置过期时间：</strong> expire key time<ul>
+<li>key为键，如果没有会报错</li>
+<li>time为时间，单位为秒</li>
+<li><em>例：expire name “LiCan” 10 -&gt; 表示为这条以name为key的数据设置10秒的存在期，到期直接删除</em></li>
+</ul>
+</li>
+<li><strong>查看数据的到期时间：</strong> ttl key<ul>
+<li>key为键，如果没有会报错</li>
+<li>如果查看的key是永久的，则结果是 <strong>-1</strong></li>
+<li>如果查看的key被设置了过期时间，则结果有两种。一种是还没到期，则是剩余时间；另一种是已经到期，则是 <strong>-2</strong></li>
+<li>查看不存在的key，则结果是 <strong>-2</strong></li>
+</ul>
+</li>
+</ol>
+<h2 id="3-String类型"><a href="#3-String类型" class="headerlink" title="3. String类型"></a>3. String类型</h2><h3 id="1-存储类型分类"><a href="#1-存储类型分类" class="headerlink" title="1. 存储类型分类"></a>1. 存储类型分类</h3><p>该类型的value是字符串，但根据字符串的格式不同，又分为3类：</p>
+<ul>
+<li>普通字符串，例：abcd</li>
+<li>整型，例：123</li>
+<li>浮点类型，例：24.6</li>
+</ul>
+<h3 id="2-常用命令"><a href="#2-常用命令" class="headerlink" title="2. 常用命令"></a>2. 常用命令</h3><ol>
+<li><strong>添加一条新数据：</strong> set key value，如果key已存在，则会覆盖之前的内容</li>
+<li><strong>获取一条数据：</strong> get key</li>
+<li><strong>添加多条新数据：</strong> mset key value [··· key value]</li>
+<li><strong>获取多条数据：</strong> mget key [··· key]</li>
+<li><strong>自增操作：</strong> incr key，默认自增1，<code>前提是整型或浮点型</code></li>
+<li><strong>自减操作：</strong> decr key，默认自减1，<code>前提是整型或浮点型</code></li>
+<li><strong>自增指定步长：</strong> incrby key increment，increment为自增步长</li>
+<li><strong>浮点自增操作：</strong> incrbyfloat key increment，此处的increment可以是小数</li>
+<li><strong>真正的新增操作：</strong> setnx key value，<code>如果key已存在，则不会新增</code></li>
+<li><strong>在新增数据时添加过期时间：</strong> setex key time value，time的单位为秒</li>
+</ol>
+<h2 id="4-Hash类型"><a href="#4-Hash类型" class="headerlink" title="4.Hash类型"></a>4.Hash类型</h2><h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h3><p>该类型的value类似于Java中的HashMap，是个键值对。常用于存储对象以及修改对象属性值。</p>
+<h3 id="2-常用命令-1"><a href="#2-常用命令-1" class="headerlink" title="2. 常用命令"></a>2. 常用命令</h3><ol>
+<li><strong>添加一条新数据：</strong> hset key field value，如果key或field已存在，则会覆盖之前的内容</li>
+<li><strong>获取一条数据：</strong> hget key</li>
+<li><strong>向同一个key中添加多条新数据：</strong> hmset key field value [··· field value]</li>
+<li><strong>向同一个key中获取多条数据：</strong> hmget key field [··· field]</li>
+<li><strong>自增指定步长：</strong> hincrby key field increment，increment为自增步长</li>
+<li><strong>浮点自增操作：</strong> hincrbyfloat key field increment，此处的increment可以是小数</li>
+<li><strong>真正的新增操作：</strong> hsetnx key field value，<code>如果field已存在，则不会新增</code></li>
+<li><strong>获取一个key中所有的field：</strong> hkeys key</li>
+<li><strong>获取一个key中所有的value：</strong> hvals key</li>
+<li><strong>获取一个key中所有的field和value：</strong> hgetall key，结果是奇数项是field，偶数项是value</li>
+</ol>
+<h2 id="5-List类型"><a href="#5-List类型" class="headerlink" title="5.List类型"></a>5.List类型</h2><h3 id="1-简介-1"><a href="#1-简介-1" class="headerlink" title="1.简介"></a>1.简介</h3><p>该类型的value类似于Java中的linkList，是个双向链表。因此，插入和删除速度快，查询效率一般。且可用来构成队列和栈</p>
+<h3 id="2-常用命令-2"><a href="#2-常用命令-2" class="headerlink" title="2. 常用命令"></a>2. 常用命令</h3><ol>
+<li><strong>添加一条新数据：</strong> lpush(左插入) &#x2F; rpush(右插入) key element [··· element]</li>
+<li><strong>获取一条数据：</strong> lpop(左取出) &#x2F; rpop(右取出) key</li>
+<li><strong>返回范围内的所有元素：</strong> Lrange key begin end，begin是开始下标，end是结束下标，两边都是闭空间。</li>
+<li><strong>获取一条数据，若没有则阻塞：</strong> brpop &#x2F; blpop key timeout，timeout是阻塞最大时间。</li>
+</ol>
+<h2 id="6-Set类型"><a href="#6-Set类型" class="headerlink" title="6.Set类型"></a>6.Set类型</h2><h3 id="1-简介-2"><a href="#1-简介-2" class="headerlink" title="1.简介"></a>1.简介</h3><p>该类型的value类似于Java中的hashset，可以看作一个hashmap，但value皆为null。因此，其具备：</p>
+<ul>
+<li>无序</li>
+<li>查询速度快</li>
+<li>不可重复</li>
+</ul>
+<h3 id="2-常用命令-3"><a href="#2-常用命令-3" class="headerlink" title="2. 常用命令"></a>2. 常用命令</h3><ol>
+<li><strong>新增一条新数据：</strong> sadd key member [··· member]</li>
+<li><strong>获取所有数据：</strong> smembers key</li>
+<li><strong>移除指定数据：</strong> srem key member [··· member]</li>
+<li><strong>判断某元素是否存在：</strong> sismember key member</li>
+<li><strong>返回当前集合中元素的总数：</strong> scard key</li>
+<li><strong>求key1与key2的交集：</strong> sinter key1 key2</li>
+<li><strong>求key1与key2的差集：</strong> sdiff key1 key2，即存在于key1集合中，但不存在于key2集合中的元素</li>
+<li><strong>求key1与key2的并集：</strong> sunion key1 key2</li>
+</ol>
+<h2 id="7-sortedSet"><a href="#7-sortedSet" class="headerlink" title="7.sortedSet"></a>7.sortedSet</h2><h3 id="1-简介-3"><a href="#1-简介-3" class="headerlink" title="1.简介"></a>1.简介</h3><p>该类型的value仍是hashSet，但多了一个score，用来排序。即底层存储仍是无序的，但返回结果前会根据score进行排序</p>
+<h3 id="2-常用命令-4"><a href="#2-常用命令-4" class="headerlink" title="2. 常用命令"></a>2. 常用命令</h3><ol>
+<li><strong>新增数据：</strong> zadd key score member [··· score member]</li>
+<li><strong>移除指定数据：</strong> zrem key member [··· score member]</li>
+<li><strong>获取集合中某元素的score值：</strong> zscore key member</li>
+<li><strong>获取集合中某元素的排名：</strong> zrank key member，默认是从小到大排；若相反，则在<code>z</code>的后面加上<code>rev</code></li>
+<li><strong>获取集合中元素的总数：</strong> zcard key</li>
+<li><strong>获取指定范围内的元素总数：</strong> zcount key begin end，默认是从小到大排；若相反，则在<code>z</code>的后面加上<code>rev</code></li>
+<li><strong>获取指定score值范围内的元素：</strong> zrangebyscore key beginScore endScore</li>
+<li><strong>获取指定范围内元素：</strong> zrange key begin end，默认是从小到大排；若相反，则在<code>z</code>的后面加上<code>rev</code></li>
+<li><strong>自增集合中某元素的score：</strong> zincrby key increment member</li>
+<li><strong>求key1与key2的交集：</strong> zinter key1 key2</li>
+<li><strong>求key1与key2的差集：</strong> zdiff key1 key2，即存在于key1集合中，但不存在于key2集合中的元素</li>
+<li><strong>求key1与key2的并集：</strong> zunion key1 key2</li>
+</ol>
+<h1 id="三、redis的使用场景"><a href="#三、redis的使用场景" class="headerlink" title="三、redis的使用场景"></a>三、redis的使用场景</h1><ol>
+<li><strong>计数器：</strong> 可以对String进行自增自减运算，很适合存储频繁读写的计数量</li>
+<li><strong>缓存：</strong> 将数据放到内存中，设置内存的最大使用量以及淘汰策略来保证缓存的命中率</li>
+<li><strong>会话缓存：</strong> 将用户与应用服务器的会话信息（如：token）存储在内存中，形成有时效的登录令牌</li>
+<li><strong>消息队列（发布&#x2F;订阅功能）：</strong> List类型是个双向链表，可以通过lpush和rpop来写入和读取消息。也可以配合Kafka、RabbitMq等消息中间件实现完整的功能。</li>
+</ol>
+<h1 id="四、过期键的删除策略"><a href="#四、过期键的删除策略" class="headerlink" title="四、过期键的删除策略"></a>四、过期键的删除策略</h1><p>Redis有三种不同的删除策略：立即删除，惰性删除，定时删除</p>
+<ul>
+<li>立即删除。在设置键的过期时间时，创建一个回调事件，当过期时间达到时，由时间处理器自动执行键的删除操作。</li>
+<li>惰性删除。键过期了就过期了，不管。当每次按key取值时，先检查此key是否已经过期，如果过期，则删除，并返回nil，如果没过期，就返回键值。</li>
+<li>定时删除。每隔一段时间，对expires字典进行检查，删除里面的过期键。</li>
+</ul>
+<p>以上三种中，第二种是被动删除，其他是主动删除，第一种的实时性最高。下面对三种策略进行具体分析：</p>
+<ul>
+<li>立即删除<br>立即删除能够保证内存的利用率最高。但对CPU是最不友好的，因为删除操作会占用CPU时间，如果刚好碰上了CPU很忙的时候，<br>比如正在做交集或排序等计算的时候，就会给CPU造成额外的压力。</li>
+<li>惰性删除<br>当键值过期后，不会立即被删除。直到按key取值时，才会被检查到过期，然后被删除。所以惰性删除对内存的占用最高。</li>
+<li>定时删除<br>从上面的分析来看，立即删除会短时间内占用大量CPU，而惰性删除则会在一段时间内占用大量内存。因此定时删除是个折中的办法。<br>定时删除是：每隔一段时间进行一次删除，一方面减少了删除的频率，从而减少对CPU的占用。另一方面减少了因惰性删除带来的内存浪费。</li>
+</ul>
+<p>ps：redis使用的策略是：惰性删除加上定时删除，两者配合使用。</p>
+
+        </article>
+
+        
+            
+  <div class="nexmoe-post-copyright">
+    <strong>本文作者：</strong>李灿<br>
+    
+    <strong>本文链接：</strong><a href="http://example.com/2023/12/20/redis/" title="http:&#x2F;&#x2F;example.com&#x2F;2023&#x2F;12&#x2F;20&#x2F;redis&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2023&#x2F;12&#x2F;20&#x2F;redis&#x2F;</a><br>
+
+    
+      <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+    
+  </div>
+
+
+        
+
+        <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/study-author-lican/">study author:lican</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/redis/" rel="tag">redis</a>
+    
+</div>
+
+    <div class="nexmoe-post-footer">
+        <section class="nexmoe-comment">
+    <div class="valine"></div>
+<script src='https://lib.baomitu.com/valine/1.3.9/Valine.min.js'></script>
+<script>
+    // 使用方法 https://valine.js.org/quickstart.html
+    new Valine({
+        el: '.valine',
+        appId: 'r5zxC0st0DDjPA9auXzMV7HY-gzGzoHsz',
+        appKey: '3bqCsovpyfTPHUzTHovd3V3V'
+    })
+</script>
+</section>
+    </div>
+</div>
+
+
+        <div class="nexmoe-post-right">
+          
+            <div class="nexmoe-fixed">
+              <div class="nexmoe-tool">
+                <a href="#" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+              </div>
+            </div>
+          
+        </div>
+    </div>
+  </div>
+  <div id="nexmoe-pendant">
+    <div class="nexmoe-drawer mdui-drawer nexmoe-pd" id="drawer">
+        
+            <div class="nexmoe-pd-item">
+                <div class="clock">
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="memory"></div>
+        <div class="needle" id="hours"></div>
+        <div class="needle" id="minutes"></div>
+        <div class="needle" id="seconds"></div>
+        <div class="clock_logo">
+
+        </div>
+
+    </div>
+<style>
+    .clock {
+        background-color: #ffffff;
+        width: 70vw;
+        height: 70vw;
+        max-width: 70vh;
+        max-height: 70vh;
+        border: solid 2.8vw #242424;
+        position: relative;
+        overflow: hidden;
+        border-radius: 50%;
+        box-sizing: border-box;
+        box-shadow: 0 1.4vw 2.8vw rgba(0, 0, 0, 0.8);
+        zoom:0.2
+    }
+
+    .memory {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform-origin: center;
+    }
+
+    .memory:nth-child(1) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(0deg) translateY(-520%);
+    }
+
+    .memory:nth-child(2) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(6deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(3) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(12deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(4) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(18deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(5) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(24deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(6) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(30deg) translateY(-520%);
+    }
+
+    .memory:nth-child(7) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(36deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(8) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(42deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(9) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(48deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(10) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(54deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(11) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(60deg) translateY(-520%);
+    }
+
+    .memory:nth-child(12) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(66deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(13) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(72deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(14) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(78deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(15) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(84deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(16) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(90deg) translateY(-520%);
+    }
+
+    .memory:nth-child(17) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(96deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(18) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(102deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(19) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(108deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(20) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(114deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(21) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(120deg) translateY(-520%);
+    }
+
+    .memory:nth-child(22) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(126deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(23) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(132deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(24) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(138deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(25) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(144deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(26) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(150deg) translateY(-520%);
+    }
+
+    .memory:nth-child(27) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(156deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(28) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(162deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(29) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(168deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(30) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(174deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(31) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(180deg) translateY(-520%);
+    }
+
+    .memory:nth-child(32) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(186deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(33) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(192deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(34) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(198deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(35) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(204deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(36) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(210deg) translateY(-520%);
+    }
+
+    .memory:nth-child(37) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(216deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(38) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(222deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(39) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(228deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(40) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(234deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(41) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(240deg) translateY(-520%);
+    }
+
+    .memory:nth-child(42) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(246deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(43) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(252deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(44) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(258deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(45) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(264deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(46) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(270deg) translateY(-520%);
+    }
+
+    .memory:nth-child(47) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(276deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(48) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(282deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(49) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(288deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(50) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(294deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(51) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(300deg) translateY(-520%);
+    }
+
+    .memory:nth-child(52) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(306deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(53) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(312deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(54) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(318deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(55) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(324deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(56) {
+        background-color: #424242;
+        width: 2%;
+        height: 8%;
+        transform: translate(-50%, -50%) rotate(330deg) translateY(-520%);
+    }
+
+    .memory:nth-child(57) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(336deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(58) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(342deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(59) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(348deg) translateY(-1461%);
+    }
+
+    .memory:nth-child(60) {
+        background-color: #949494;
+        width: 1%;
+        height: 3%;
+        transform: translate(-50%, -50%) rotate(354deg) translateY(-1461%);
+    }
+
+    .needle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform-origin: center;
+    }
+
+    .needle#hours {
+        background-color: #1f1f1f;
+        width: 4%;
+        height: 30%;
+        transform-origin: center 75%;
+        transform: translate(-50%, -75%);
+    }
+
+    .needle#hours.moving {
+        transition: transform 150ms ease-out;
+    }
+
+    .needle#hours:after {
+        content: '';
+        background-color: #1f1f1f;
+        width: 4vw;
+        height: 4vw;
+        max-width: 4vh;
+        max-height: 4vh;
+        display: block;
+        position: absolute;
+        top: 75%;
+        left: 50%;
+        box-sizing: border-box;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .needle#minutes {
+        background-color: #1f1f1f;
+        width: 2%;
+        height: 45%;
+        transform-origin: center 75%;
+        transform: translate(-50%, -75%);
+    }
+
+    .needle#minutes.moving {
+        transition: transform 150ms ease-out;
+    }
+
+    .needle#minutes:after {
+        content: '';
+        background-color: #1f1f1f;
+        width: 4vw;
+        height: 4vw;
+        max-width: 4vh;
+        max-height: 4vh;
+        display: block;
+        position: absolute;
+        top: 75%;
+        left: 50%;
+        box-sizing: border-box;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .needle#seconds {
+        background-color: #cb2f2f;
+        width: 1%;
+        height: 50%;
+        transform-origin: center 75%;
+        transform: translate(-50%, -75%);
+    }
+
+    .needle#seconds.moving {
+        transition: transform 150ms ease-out;
+    }
+
+    .needle#seconds:after {
+        content: '';
+        background-color: #cb2f2f;
+        width: 2.5vw;
+        height: 2.5vw;
+        max-width: 2.5vh;
+        max-height: 2.5vh;
+        display: block;
+        position: absolute;
+        top: 75%;
+        left: 50%;
+        box-sizing: border-box;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .clock_logo{
+        width: 10vw;
+        height: 10vw;
+        max-width: 10vh;
+        max-height: 10vh;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        box-sizing: border-box;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+    @media (min-width: 100vh) {
+        .clock {
+            border: solid 2.8vh #242424;
+            box-shadow: 0 1.4vh 2.8vh rgba(0, 0, 0, 0.8);
+        }
+    }
+
+</style>
+
+
+
+
+
+            </div>
+        
+            <div class="nexmoe-pd-item">
+                <div class="qweather" >
+    <div id="he-plugin-standard"></div>
+    <div class="qweather-logo">
+
+    </div>
+
+</div>
+<style>
+    .qweather{
+        position: relative;
+    }
+    .qweather-logo{
+        position: absolute;
+        right: 0;
+        top: -15px;
+        width: 40px;
+        height: 40px;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+</style>
+<script>
+  WIDGET = {
+    "CONFIG": {
+      "layout": "2",
+      "width": "260",
+      "height": "220",
+      "background": "5",
+      "dataColor": "e67249",
+      "borderRadius": "15",
+      "key": "f74d1e1690e6432d801e97fa2f05a162"
+    }
+  }
+</script>
+<script src="https://widget.qweather.net/standard/static/js/he-standard-common.js?v=2.0"></script>
+
+            </div>
+        
+</div>
+<style>
+    .nexmoe-pd {
+        left: auto;
+        top: 40px;
+        right: 0;
+    }
+    .nexmoe-pd-item{
+       display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+</style>
+
+  </div>
+  <script src="https://lib.baomitu.com/lazysizes/5.1.0/lazysizes.min.js"></script>
+<script src="https://lib.baomitu.com/highlight.js/10.0.0/highlight.min.js"></script>
+<script src="https://lib.baomitu.com/mdui/0.4.3/js/mdui.min.js"></script>
+
+<script>
+	hljs.initHighlightingOnLoad();
+</script>
+
+<script src="https://lib.baomitu.com/jquery/3.5.1/jquery.slim.min.js"></script>
+<script src="/lib/fancybox/js/jquery.fancybox.min.js"></script>
+
+
+<script src="/js/app.js?v=1723258182910"></script>
+
+<script src="https://lib.baomitu.com/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+  
+
+
+
+
+
+<!-- hexo injector body_end start -->
+<script src="https://lib.baomitu.com/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+<script src="/lib/codeBlock/codeBlockFuction.js"></script>
+
+<script src="/lib/codeBlock/codeLang.js"></script>
+
+<script src="/lib/codeBlock/codeCopy.js"></script>
+
+<script src="/lib/codeBlock/codeShrink.js"></script>
+
+<link rel="stylesheet" href="/lib/codeBlock/matery.css">
+
+<script src="/js/clock.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+
+<script src="/js/search.js"></script>
+
+<script src="/js/webapp.js"></script>
+<!-- hexo injector body_end end --></body>
+</html>
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/250cb4aa.js","daovoice")</script>
+<script>
+  daovoice('init', {
+    app_id: "250cb4aa"
+  });
+  daovoice('update');
+</script>
+
